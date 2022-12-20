@@ -1,0 +1,512 @@
+-- [Library] --
+
+
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({Name = "Blade Simulator By Drazox#2893", HidePremium = true, SaveConfig = false, ConfigFolder = "OrionTest", IntroEnabled = false,})
+
+
+-- [Tabs] -- 
+
+
+local Tab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://6026568198",
+	PremiumOnly = false
+})
+
+local Tab4 = Window:MakeTab({
+	Name = "Eggs",
+	Icon = "rbxassetid://6034287525",
+	PremiumOnly = false
+})
+
+local Tab5 = Window:MakeTab({
+	Name = "WebHook",
+	Icon = "rbxassetid://6034452648",
+	PremiumOnly = false
+})
+
+local Tab2 = Window:MakeTab({
+	Name = "Misc",
+	Icon = "rbxassetid://6034509993",
+	PremiumOnly = false
+})
+
+local Tab3 = Window:MakeTab({
+	Name = "Credits",
+	Icon = "rbxassetid://6034287594",
+	PremiumOnly = false
+})
+
+
+-- [Config] --
+
+
+local config = {
+    AutoSwing = false,
+    AutoSell = false,
+    AutoSellDelayed = false,
+    AutoBuySwords = false,
+    AutoBuyAuras = false,
+    AutoOpenEgg= false,
+    AutoTeleportMobs = false,
+    AutoQuest = false,
+    SelectedEgg = "Common Egg",
+    SelectedMob = "Bandit Miner",
+    SendOnlineWebhook = false,
+    urlinput = ""
+}
+
+-- [Notification] --
+
+
+OrionLib:MakeNotification({
+	Name = "Ultra Hub",
+	Content = "Thanx For Using made by Drazox#2893",
+	Image = "rbxassetid://4483345998",
+	Time = 8
+})
+
+-- [Variables] --
+
+local pos = Vector3.new(Coordinates)
+
+local ts = game:GetService('TweenService')
+
+local plr = game.Players.LocalPlayer
+
+local Char = plr.Character or plr.CharacterAdded:wait()
+
+-- [Tables] --
+
+local EggsSource = {}
+
+for i,v in pairs(game:GetService("Workspace").Eggs:GetChildren()) do
+    if v:IsA("Model") then
+        if not table.find(EggsSource, v.Name) then
+            table.insert(EggsSource, v.Name)
+        end
+    end
+end
+
+local MobsSource = {}
+
+for i,v in pairs(game:GetService("Workspace").Mobs:GetChildren()) do
+    if v:IsA("Model") then
+        if not table.find(MobsSource, v.Name) then
+            table.insert(MobsSource, v.Name)
+        end
+    end
+end
+
+-- [Buttons/Dropdowns/Toggles] --
+
+-- Section --
+
+local Section0 = Tab:AddSection({
+	Name = "AutoFarm"
+})
+
+Tab:AddToggle({
+	Name = "Auto Swing Sword",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoSwing = v
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Auto Sell When Full",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoSell = v
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Auto Sell Delayed",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoSellDelayed = v
+	end    
+})
+
+Tab:AddDropdown({
+	Name = "Select Mob To Farm",
+	Default = "Bandit Miner",
+	Options = MobsSource,
+	Callback = function(v)
+        config.SelectedMob = v
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Auto Farm Selected Mob",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoTeleportMobs = v
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Auto Quest",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoQuest = v
+	end    
+})
+
+local Section00 = Tab:AddSection({
+	Name = "Auto Shop"
+})
+
+Tab:AddToggle({
+	Name = "Auto Buy Weapons",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoBuySwords = v
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Auto Buy Auras",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoBuyAuras = v
+	end    
+})
+
+local Section000 = Tab:AddSection({
+	Name = "GUI Menu"
+})
+
+Tab:AddToggle({
+	Name = "Open Teleport GUI",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        game:GetService("Players").LocalPlayer.PlayerGui.Teleport.Enabled = v
+	end    
+})
+
+local Section33 = Tab4:AddSection({
+	Name = "Auto Open Eggs"
+})
+
+Tab4:AddLabel("Notice : You need too be near the egg to open.")
+
+Tab4:AddDropdown({
+	Name = "Select Egg To Open",
+	Default = "Common Egg",
+	Options = EggsSource,
+	Callback = function(v)
+        config.SelectedEgg = v
+	end    
+})
+
+Tab4:AddToggle({
+	Name = "Auto Open Selected Egg",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.AutoOpenEgg = v
+	end    
+})
+
+local Section333 = Tab5:AddSection({
+	Name = "Discord WebHook"
+})
+
+Tab5:AddTextbox({
+	Name = "Put Your Webhook Link",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(v)
+		config.urlinput = v
+	end	  
+})
+
+Tab5:AddToggle({
+	Name = "Send Your Stats [Every Minutes]",
+	Default = false,
+    Save = false,
+	Callback = function(v)
+        config.SendOnlineWebhook = v
+	end    
+})
+
+
+-- Section 3 -- 
+
+local Section3 = Tab2:AddSection({
+	Name = "Misc"
+})
+
+Tab2:AddButton({
+	Name = "Anti AFK",
+	Callback = function()
+        local VirtualUser=game:service'VirtualUser'
+        game:service'Players'.LocalPlayer.Idled:connect(function()
+        warn("anti-afk")
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+        end)
+
+        OrionLib:MakeNotification({
+            Name = "Anti-AFK",
+            Content = "Anti AFK Enabled",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+
+  	end    
+})
+
+Tab2:AddSlider({
+	Name = "Walk Speed",
+	Min = 16,
+	Max = 300,
+	Default = 16,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "",
+	Callback = function(v)
+        game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = v
+	end    
+})
+
+Tab2:AddSlider({
+	Name = "FOV",
+	Min = 16,
+	Max = 120,
+	Default = 70,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "",
+	Callback = function(v)
+        local Camera = workspace.CurrentCamera
+        Camera.FieldOfView = v
+	end    
+})
+
+-- Section 4 -- 
+
+local Section4 = Tab3:AddSection({
+	Name = "Credits"
+})
+
+Tab3:AddLabel("This Script has been Developed by Drazox#2893")
+Tab3:AddLabel("----------------------------------------------------------------------")
+Tab3:AddLabel("Our Discord Has A Lot Of Free Working Scripts")
+Tab3:AddButton({
+	Name = "Join The Discord !",
+	Callback = function()
+        local req = http_request or syn and syn.request or request
+        
+        if req ~= nil then
+            local http = game:GetService("HttpService")
+        
+            local t = {
+                cmd = "INVITE_BROWSER",
+                args = {
+                    code = "pmGkj92S7p"
+                },
+                nonce = string.lower(http:GenerateGUID(false))
+            }
+            local post = http:JSONEncode(t)
+        
+            for port=6463, 6472, 1 do
+                req({
+                    Url = "http://127.0.0.1:" .. tostring(port) .. "/rpc?v=1",
+                    Method = "POST",
+                    Body = post,
+                    Headers = {
+                        ["Content-Type"] = "application/json",
+                        ["Origin"] = "https://discord.com"
+                    }
+                })
+            end
+        end
+  	end    
+})
+
+-- [Functions] --
+
+spawn(function()
+    while task.wait(0.5) do
+        if config.AutoSwing == true then
+            pcall(function()
+
+                for i, v in next, game:GetService("Workspace")[game.Players.LocalPlayer.Name]:GetChildren() do
+
+                    if v:IsA("Tool") then
+
+                game:GetService("Workspace")[game.Players.LocalPlayer.Name][v.Name]:Activate()
+                
+                wait()
+                           
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if config.AutoSell == true then
+            pcall(function()
+
+                if game:GetService("Players")["Shoumi_YT"].PlayerGui.Popups.MaxMagic.Visible == true then
+
+                    local t = ts:create(Char.Humanoid.RootPart,TweenInfo.new(1), {CFrame = CFrame.new(-569.9130859375, 125.3653564453125, 150.0053253173828)}  )
+                    t:Play()
+    
+                    wait(1.5)
+    
+                    local t = ts:create(Char.Humanoid.RootPart,TweenInfo.new(1), {CFrame = CFrame.new(-553.4520263671875, 125.26535034179688, 135.84417724609375)}  )
+                    t:Play()
+    
+                    wait(1)
+                           
+                end
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait(10) do
+        if config.AutoSellDelayed == true then
+            pcall(function()
+
+                local t = ts:create(Char.Humanoid.RootPart,TweenInfo.new(1), {CFrame = CFrame.new(-569.9130859375, 125.3653564453125, 150.0053253173828)}  )
+                t:Play()
+
+                wait(1.5)
+
+                local t = ts:create(Char.Humanoid.RootPart,TweenInfo.new(1), {CFrame = CFrame.new(-553.4520263671875, 125.26535034179688, 135.84417724609375)}  )
+                t:Play()
+
+                wait(1)
+                           
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait(1.5) do
+        if config.AutoBuySwords == true then
+            pcall(function()
+                           
+                game:GetService("ReplicatedStorage").Remotes.Shop.BuyAllWeapons:InvokeServer()
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait(1.5) do
+        if config.AutoBuyAuras == true then
+            pcall(function()
+                           
+                game:GetService("ReplicatedStorage").Remotes.Shop.BuyAllAuras:InvokeServer()
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait(0.5) do
+        if config.AutoOpenEgg == true then
+            pcall(function()
+                           
+                game:GetService("ReplicatedStorage").Remotes.Eggs.OpenEgg:InvokeServer(config.SelectedEgg,1)
+
+            end)
+        end
+    end
+end)
+
+local function getNPC()
+    local dist, thing = math.huge
+    for i, v in next, game:GetService("Workspace").Mobs:GetChildren() do
+        if v:IsA("Model") and v.Name == config.SelectedMob and v.Humanoid.Health > 0 then
+            local mag =
+                (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude
+            if mag < dist then
+                dist = mag
+                thing = v
+            end
+        end
+    end
+    return thing
+end
+
+spawn(function()
+    while task.wait() do
+        if config.AutoTeleportMobs == true then
+            pcall(function()
+
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = getNPC().HumanoidRootPart.CFrame * CFrame.new(0,0,3)
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait(2) do
+        if config.AutoQuest == true then
+            pcall(function()
+
+                game:GetService("ReplicatedStorage").Remotes.Quests.CompleteQuest:InvokeServer()
+                
+                game:GetService("ReplicatedStorage").Remotes.Quests.AcceptQuest:InvokeServer()
+
+            end)
+        end
+    end
+end)
+
+
+-- [Webhook System] --
+
+
+spawn(function()
+    while task.wait() do
+        if config.SendOnlineWebhook == true then
+            pcall(function()
+                
+                local http_request = http_request or syn and syn.request or request
+
+                http_request({
+                    Method = "POST",
+                    Url = config.urlinput,
+                    Headers = {
+                        ["Content-Type"] = "application/json"
+                    },
+                    Body = game:GetService("HttpService"):JSONEncode({
+                        username = "WebHook",
+                        content = "**Your Blade Simulator Stats :**".."\nLevel : `" .. game:GetService("Players").LocalPlayer.leaderstats.Level.Value .."`".."\nMagic : `" ..game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Left.MagicFrame.Amount.Text.."`".."\nCoins : `" .. game:GetService("Players").LocalPlayer.leaderstats.Coins.Value .. "`"
+                    })
+                })
+
+                wait(60)
+
+            end)
+        end
+    end
+end)
+
